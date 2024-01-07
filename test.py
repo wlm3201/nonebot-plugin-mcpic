@@ -23,7 +23,7 @@ async def handle_mcpic():
     text = args
     num = min(int(text), 20) if (text := text[:2]).isdigit() and int(text) else 1
     size = "large" if num < 5 else "small" if num > 10 else "medium"
-    db_path = Path(__file__).parent / "mcpic.db"
+    db_path = Path(__file__) / "nonebot_plugin_mcpic" / "mcpic.db"
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
     c.execute("SELECT * FROM images ORDER BY RANDOM() LIMIT ?", [num])
