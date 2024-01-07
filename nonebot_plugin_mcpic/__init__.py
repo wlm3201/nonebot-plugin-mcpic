@@ -17,7 +17,7 @@ __plugin_meta__ = PluginMetadata(
     homepage="https://github.com/wlm3201/nonebot-plugin-mcpic",
     supported_adapters={"~onebot.v11"},
 )
-mcpic = on_command("mc", aliases={"MC", "建筑"}, priority=5)
+mcpic = on_command("mc", aliases={"MC", "建筑"})
 
 
 @mcpic.handle()
@@ -37,15 +37,15 @@ async def handle_mcpic(args: Message = CommandArg()):
         except:
             pass
 
+    text = args.extract_plain_text()
+    num = min(int(text), 20) if (text := text[:2]).isdigit() and int(text) else 1
+    size = "large" if num < 5 else "small" if num > 10 else "medium"
     db_path = Path(__file__).parent / "mcpic.db"
     if not db_path.exists():
         try:
             await init_db()
         except:
             return
-    text = args.extract_plain_text()
-    num = min(int(text), 20) if (text := text[:2]).isdigit() and int(text) else 1
-    size = "large" if num < 5 else "small" if num > 10 else "medium"
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
     c.execute("SELECT * FROM images ORDER BY RANDOM() LIMIT ?", [num])
