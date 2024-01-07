@@ -64,7 +64,7 @@ _✨ 随机发送MC建筑图片 ✨_
 
 打开 nonebot2 项目根目录下的 `pyproject.toml` 文件, 在 `[tool.nonebot]` 部分追加写入
 
-    plugins = ["nonebot-plugin-mcpic"]
+    plugins = ["nonebot_plugin_mcpic"]
 
 </details>
 
@@ -77,4 +77,4 @@ e.g: 建筑, mc20
 
 ### 效果图
 
-<img src="https://raw.githubusercontent.com/wlm3201/nonebot-plugin-mcpic/main/eg.png" width="240" alt="NoneBotPluginText">
+<img src="https://raw.githubusercontent.com/wlm3201/nonebot-plugin-mcpic/main/eg.png">

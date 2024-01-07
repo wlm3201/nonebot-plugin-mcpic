@@ -4,20 +4,35 @@ from io import BytesIO
 from pathlib import Path
 
 from httpx import AsyncClient
-from nonebot import on_command
-from nonebot.adapters.onebot.v11 import Message, MessageSegment
-from nonebot.params import CommandArg
-from nonebot.plugin import PluginMetadata
+from PIL import Image
 
-__plugin_meta__ = PluginMetadata(
-    name="随机MC图",
-    description="随机从推特获取并发送MC建筑图片",
-    usage="使用命令:mc|建筑+数量 e.g: mc,建筑20",
-    type="application",
-    homepage="https://github.com/wlm3201/nonebot-plugin-mcpic",
-    supported_adapters={"~onebot.v11"},
-)
-mcpic = on_command("mc", aliases={"MC", "建筑"}, priority=5)
+text = ""
+
+
+class mcpic:
+    def handle():
+        def deco(func):
+            return func
+
+        return deco
+
+    async def finish(segs):
+        for seg in segs:
+            seg.show()
+
+
+class Message:
+    def extract_plain_text():
+        return text
+
+
+def CommandArg():
+    return Message
+
+
+class MessageSegment:
+    def image(content):
+        return Image.open(content)
 
 
 @mcpic.handle()
@@ -57,3 +72,6 @@ async def handle_mcpic(args: Message = CommandArg()):
         segs = await asyncio.gather(*tasks)
     segs = list(filter(None, segs))
     await mcpic.finish(segs)
+
+
+asyncio.run(handle_mcpic())
