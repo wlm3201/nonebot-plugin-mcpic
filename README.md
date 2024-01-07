@@ -68,10 +68,6 @@ _✨ 随机发送MC建筑图片 ✨_
 
 </details>
 
-## ⚙️ 配置
-
-无
-
 ## 🎉 使用
 ### 指令表
 
@@ -80,3 +76,5 @@ mc|MC|建筑+图片数量
 e.g: 建筑, mc20
 
 ### 效果图
+
+<img src="https://raw.githubusercontent.com/wlm3201/nonebot-plugin-mcpic/main/eg.png" width="240" alt="NoneBotPluginText">
