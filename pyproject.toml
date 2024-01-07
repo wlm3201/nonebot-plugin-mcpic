@@ -10,7 +10,7 @@ requires-python = ">=3.8"
 authors = [{ name = "wlm3201", email = "wlm3201@qq.com" }]
 description = "随机发送MC建筑图片"
 readme = "README.md"
-license = "LICENSE"
+license = { file = "LICENSE" }
 keywords = ["mcpic"]
 classifiers = []
 
