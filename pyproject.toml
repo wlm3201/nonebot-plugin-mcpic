@@ -1,6 +1,6 @@
 [project]
 name = "nonebot-plugin-mcpic"
-version = "0.1"
+version = "0.1.1"
 dependencies = [
     "httpx>=0.26.0",
     "nonebot2>=2.1.3",
