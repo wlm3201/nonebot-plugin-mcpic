@@ -32,7 +32,7 @@ async def handle_mcpic(args: Message = CommandArg()):
         # url = f"{base_url}{name.stem}?format={name.suffix}&name=orig"
         url = f"{host}{name.stem}?format=jpg&name={size}"
         try:
-            r = await client.get(url)
+            r = await client.get(url, headers={"host": "pbs.twimg.com"})
             return MessageSegment.image(BytesIO(r.content))
         except:
             pass
@@ -48,11 +48,11 @@ async def handle_mcpic(args: Message = CommandArg()):
             return
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
-    c.execute("SELECT * FROM images ORDER BY RANDOM() LIMIT ?", [num])
+    c.execute("SELECT name FROM images ORDER BY RANDOM() LIMIT ?", [num])
     rows = c.fetchall()
     conn.close()
-    async with AsyncClient() as client:
-        host = "https://pbs.twimg.com/media/"
+    async with AsyncClient(verify=0) as client:
+        host = "https://192.229.233.50/media/"
         tasks = [asyncio.create_task(get_pic(Path(row[0]))) for row in rows]
         segs = await asyncio.gather(*tasks)
     segs = list(filter(None, segs))
