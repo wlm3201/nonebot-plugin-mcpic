@@ -6,7 +6,7 @@ from pathlib import Path
 from httpx import AsyncClient
 from PIL import Image
 
-text = ""
+text = "2"
 
 
 class mcpic:
@@ -47,27 +47,27 @@ async def handle_mcpic(args: Message = CommandArg()):
         # url = f"{base_url}{name.stem}?format={name.suffix}&name=orig"
         url = f"{host}{name.stem}?format=jpg&name={size}"
         try:
-            r = await client.get(url)
+            r = await client.get(url, headers={"host": "pbs.twimg.com"})
             return MessageSegment.image(BytesIO(r.content))
         except:
             pass
 
+    text = args.extract_plain_text()
+    num = min(int(text), 20) if (text := text[:2]).isdigit() and int(text) else 1
+    size = "large" if num < 5 else "small" if num > 10 else "medium"
     db_path = Path(__file__).parent / "mcpic.db"
     if not db_path.exists():
         try:
             await init_db()
         except:
             return
-    text = args.extract_plain_text()
-    num = min(int(text), 20) if (text := text[:2]).isdigit() and int(text) else 1
-    size = "large" if num < 5 else "small" if num > 10 else "medium"
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
-    c.execute("SELECT * FROM images ORDER BY RANDOM() LIMIT ?", [num])
+    c.execute("SELECT name FROM images ORDER BY RANDOM() LIMIT ?", [num])
     rows = c.fetchall()
     conn.close()
-    async with AsyncClient() as client:
-        host = "https://pbs.twimg.com/media/"
+    async with AsyncClient(verify=0) as client:
+        host = "https://192.229.233.50/media/"
         tasks = [asyncio.create_task(get_pic(Path(row[0]))) for row in rows]
         segs = await asyncio.gather(*tasks)
     segs = list(filter(None, segs))
