@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+      * {
+        box-sizing: border-box;
+        border-radius: 10px;
+        gap: 10px;
+      }
+      #imgbox {
+        display: flex;
+        line-height: 0;
+        flex-wrap: wrap;
+        &::after {
+          content: "";
+          flex-grow: 114514;
+        }
+        > img {
+          cursor: pointer;
+          min-height: 300px;
+        }
+      }
+      #cover {
+        position: fixed;
+        z-index: 1;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.5);
+        top: 0;
+        &.hide {
+          display: none;
+        }
+        #zoom {
+          transform: translateZ(0);
+          object-fit: contain;
+          height: 100%;
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="imgbox"></div>
+    <div id="cover" class="hide">
+      <img id="zoom" />
+    </div>
+    <script>
+      (async () => {
+        let fns = await fetch("mcpic.json").then(r => r.json());
+        fns.sort(() => Math.random() - 0.5);
+        let sizes = {
+          orig: "orig",
+          large: "large",
+          medium: "medium",
+          small: "small",
+        };
+        let imgbox = document.querySelector("#imgbox");
+        let loading = 0;
+        window.onscroll = () => {
+          if (
+            !loading &&
+            document.documentElement.scrollTop +
+              2 * document.documentElement.clientHeight >=
+              document.documentElement.scrollHeight
+          ) {
+            for (let _ of Array(50)) {
+              loading++;
+              let img = new Image();
+              img.onload = () => {
+                loading--;
+                let ratio = img.width / img.height;
+                img.style.width = 300 * ratio + "px";
+                img.style.flexGrow = ratio;
+                imgbox.append(img);
+              };
+              img.onerror = () => loading--;
+              let [hash, suffix] = fns.shift().split(".");
+              img.suffix = suffix;
+              img.src = `https://pbs.twimg.com/media/${hash}?format=jpg&name=small`;
+            }
+          }
+        };
+        window.onscroll();
+        {
+          let cover = document.querySelector("#cover");
+          let zoom = document.querySelector("#zoom");
+          let scale = 1;
+          function toggleZoom(src) {
+            zoom.src = src;
+            zoom.style = "";
+            scale = 1;
+            cover.classList.remove("hide");
+          }
+          function zoomImg(e) {
+            e.preventDefault();
+            let s = e.deltaY < 0 ? scale + 1 : scale - 1;
+            if (s < -1 || s > 4) return;
+            scale = s;
+            zoom.style.transform = `scale(${1.25 ** scale})`;
+            moveImg(e);
+          }
+          function moveImg(e) {
+            let t,
+              l,
+              br = 0.8,
+              ih = zoom.clientHeight * scale,
+              iw = zoom.clientWidth * scale,
+              dh = document.documentElement.clientHeight,
+              dw = document.documentElement.clientWidth;
+            if (ih > dh + 1) t = (br * dh - ih) * (e.clientY / dh - 0.5);
+            else t = 0;
+            if (iw > dw + 1) l = (br * dw - iw) * (e.clientX / dw - 0.5);
+            else l = 0;
+            zoom.style.translate = `${l}px ${t}px 0px`;
+          }
+          cover.onwheel = zoomImg;
+          cover.onmousemove = moveImg;
+          cover.onclick = () => cover.classList.add("hide");
+          document.addEventListener("click", e => {
+            if (e.target.matches("#imgbox img"))
+              toggleZoom(
+                e.target.src
+                  .replace("&name=small", "&name=orig")
+                  .replace("?format=jpg", `?format=${e.target.suffix}`)
+              );
+          });
+        }
+      })();
+    </script>
+  </body>
+</html>
